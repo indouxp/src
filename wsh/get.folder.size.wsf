@@ -1,0 +1,74 @@
+<package>
+  <Job id="get.folder.size">
+    <runtime>
+      <description>
+      </description>
+    </runtime>
+    <?job debug="true"?>
+    <Script language="JScript">
+      function usage() {
+        var aryUsage = new Array();
+        var i;
+        aryUsage[0] = "Usage";
+        aryUsage[1] = "> cscript " + WScript.ScriptName + " FOLDER [...]";
+        aryUsage[2] = "FOLDER:フォルダー";
+        aryUsage[3] = "ex)";
+        aryUsage[4] = "> cscript " + WScript.ScriptName + " temp C:\Windows";
+        for (i = 0; i < aryUsage.length; i++) {
+          WScript.Echo(aryUsage[i]);
+        }
+      }
+      function getKBytes(size) {
+        return Math.floor(size/1024) + " KBytes";
+      }
+      function getMBytes(size) {
+        return Math.floor(size/1024/1024) + " MBytes";
+      }
+      function getGBytes(size) {
+        return Math.floor(size/1024/1024/1024) + " GBytes";
+      }
+      try {
+
+        var rtnCode = 0;
+        var strMsg = "";
+        var i = 0;
+        var objFSO;     // ファイルシステムオブジェクト
+        var strFolder;  // フォルダー
+        var objFolder;  // フォルダーオブジェクト
+        if (WScript.Arguments.length == 0) {
+          usage();
+          throw "引数";
+        } 
+        objFSO = WScript.CreateObject("Scripting.FileSystemObject");
+        for (i = 0; i < WScript.Arguments.length; i++) {
+          strMsg = " ";
+          strFolder = WScript.Arguments(i);
+          objFolder = objFSO.getFolder(strFolder);
+          var intSize = objFolder.Size;
+          var strSize = "";
+/*
+          if (intSize < 1024) {
+            strSize = intSize + " bytes";
+          } else if (intSize < 1024 * 1024) {
+            strSize = getKBytes(intSize);
+          } else if (intSize < 1024 * 1024 * 1024) {
+            strSize = getMBytes(intSize);
+          } else {
+            strSize = getGBytes(intSize);
+          }
+*/
+          strSize = intSize + " bytes";
+          strMsg = strMsg + "Folder:" + strFolder;
+          strMsg = strMsg + " ";
+          strMsg = strMsg + strSize;
+          WScript.Echo(strMsg);
+        }
+      } catch(eCatch) {
+        WScript.Echo("Error:" + eCatch);
+        rtnCode = 9;
+      } finally {
+        WScript.Quit(rtnCode);
+      }
+    </Script>
+  </Job>
+</package>

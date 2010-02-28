@@ -1,0 +1,57 @@
+<package>
+  <Job id="get.drive.size">
+    <runtime>
+      <description>
+      </description>
+    </runtime>
+    <?job debug="true"?>
+    <Script language="JScript">
+      function usage() {
+        var aryUsage = new Array();
+        var i;
+        aryUsage[0] = "Usage";
+        aryUsage[1] = "> cscript " + WScript.ScriptName + " DRIVE [...]";
+        aryUsage[2] = "DRIVE:ドライブレター";
+        aryUsage[3] = "ex)";
+        aryUsage[4] = "> cscript " + WScript.ScriptName + " C: D:";
+        for (i = 0; i < aryUsage.length; i++) {
+          WScript.Echo(aryUsage[i]);
+        }
+      }
+      function getGbytes(size) {
+        return Math.floor(size/1024/1024/1024) + "Gbytes";
+      }
+      try {
+        var rtnCode = 0;
+        var strMsg = "";
+        var i = 0;
+        var objFSO;     // ファイルシステムオブジェクト
+        var objDrive;   // ドライブオブジェクト
+        if (WScript.Arguments.length == 0) {
+          usage();
+          throw "引数";
+        } 
+        objFSO = WScript.CreateObject("Scripting.FileSystemObject");
+        WScript.Echo(" Drive:   free Gbytes / total Gbytes");
+        for (i = 0; i < WScript.Arguments.length; i++) {
+          strMsg = " ";
+          strDrive = WScript.Arguments(i);
+          objDrive = objFSO.GetDrive(strDrive);
+          strMsg = strMsg + "Drive:" + strDrive;
+          strMsg = strMsg + " ";
+          strMsg = strMsg + getGbytes(objDrive.AvailableSpace);
+          strMsg = strMsg + " ";
+          strMsg = strMsg + "/";
+          strMsg = strMsg + " ";
+          strMsg = strMsg + getGbytes(objDrive.TotalSize);
+          WScript.Echo(strMsg);
+        }
+      } catch(eCatch) {
+        WScript.Echo("Error:" + eCatch);
+        rtnCode = 9;
+      } finally {
+        WScript.Quit(rtnCode);
+      }
+    </Script>
+  </Job>
+</package>
