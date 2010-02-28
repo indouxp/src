@@ -1,0 +1,87 @@
+<package>
+  <Job id="uniq">
+    <runtime>
+      <description>
+      </description>
+    </runtime>
+    <?job debug="true"?>
+    <Script language="JScript">
+      Gdebug = false;
+      Gstderr = WScript.StdErr;
+      function debug(msg) {
+        if (Gdebug) {
+          Gstderr.WriteLine(msg);
+        }
+      }
+      ////////////////////////////////////////////////////////////////////////
+      //
+      // 使用方法表示
+      //
+      ////////////////////////////////////////////////////////////////////////
+      function usage() {
+        debug("usage");
+        var aryUsage = new Array();
+        var i;
+        aryUsage[0] = "Usage";
+        aryUsage[1] = "> cscript //nologo " + WScript.ScriptName + " FILE"
+        aryUsage[2] = "FILE:sort済みのファイル";
+        for (i = 0; i < aryUsage.length; i++) {
+          WScript.Echo(aryUsage[i]);
+        }
+      }
+      ////////////////////////////////////////////////////////////////////////
+      //
+      // 出力
+      //
+      ////////////////////////////////////////////////////////////////////////
+      function output(strOut) {
+        WScript.Echo(strOut);
+      }
+      ////////////////////////////////////////////////////////////////////////
+      //
+      // 主処理
+      //
+      ////////////////////////////////////////////////////////////////////////
+      try {
+        var err = new Error();
+        var rtnCode = 0;
+        var objFso = WScript.CreateObject("Scripting.FileSystemObject");
+        var objTxtStm;
+        var strFile;
+        var strLine;
+        var strPrev;
+　　　　var line_count = 0;
+        try {
+          strFile = WScript.Arguments.Item(0);
+        } catch(eCatch) {
+          usage();
+          err.description = "引数を指定してくださいエラー";
+          throw err;
+        }
+        if (!objFso.FileExists(strFile)) {
+          usage();
+          err.description = "引数エラー";
+          throw err;
+        }
+        objTxtStm =  objFso.OpenTextFile(strFile, 1, -2);
+        while(!objTxtStm.AtEndOfStream) {
+          line_count++;
+          strLine = objTxtStm.ReadLine();
+          if (strPrev != strLine) {
+            output(strPrev);
+          }
+          strPrev = strLine;
+        }
+        if (line_count > 0) {
+          output(strPrev);
+        }
+        objTxtStm.Close();
+      } catch(eCatch) {
+        WScript.Echo("Error:" + eCatch.description);
+        rtnCode = 9;
+      } finally {
+        WScript.Quit(rtnCode);
+      }
+    </Script>
+  </Job>
+</package>
